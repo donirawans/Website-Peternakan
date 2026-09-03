@@ -123,11 +123,11 @@ const TopNavBar = ({ activeNav: externalActiveNav, onNavChange }) => {
     <>
       <nav className="fixed left-0 right-0 top-0 w-full z-40 bg-surface/90 border-b border-primary/10 backdrop-blur-md transition-all duration-200">
         <div className="flex justify-between items-center w-full px-4 sm:px-6 md:px-margin-desktop max-w-container-max mx-auto py-3 md:py-4">
-          <Link to="/" onClick={handleLogoClick} className="font-display-lg font-bold flex items-center gap-2.5 sm:gap-3 group cursor-pointer select-none">
-            <BullLogo size={46} className="w-11 h-11 sm:w-14 sm:h-14 transition-transform group-hover:scale-105" />
+          <Link to="/" onClick={handleLogoClick} className="font-display-lg font-bold flex items-center gap-2 sm:gap-3 group cursor-pointer select-none">
+            <BullLogo size={42} className="w-10 h-10 sm:w-14 sm:h-14 transition-transform group-hover:scale-105 flex-shrink-0" />
             <div className="flex flex-col items-start leading-none">
-              <span className="text-[22px] sm:text-[26px] md:text-[28px] font-bold text-[#2D6A4F] leading-none">{farmSettings?.farm_name || 'KANDAS'}</span>
-              <span className="text-[10px] sm:text-[11px] font-normal tracking-wider uppercase opacity-70 leading-none mt-0.5 text-slate-600">{farmSettings?.tagline || 'Kandang Dastro'}</span>
+              <span className="text-[20px] sm:text-[26px] md:text-[28px] font-bold text-[#2D6A4F] leading-none">{farmSettings?.farm_name || 'KANDAS'}</span>
+              <span className="hidden md:block text-[10px] sm:text-[11px] font-normal tracking-wider uppercase opacity-70 leading-none mt-0.5 text-slate-600">{farmSettings?.tagline || 'Kandang Dastro'}</span>
             </div>
           </Link>
 

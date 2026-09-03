@@ -206,53 +206,53 @@ const LandingPage = ({ cattleList = [] }) => {
 
       <main className="flex-grow pt-[76px] sm:pt-[84px] overflow-x-hidden">
         {/* Hero Section */}
-        <section className="relative min-h-[calc(100vh-84px)] flex items-center py-6 sm:py-8 md:py-12 px-4 sm:px-6 md:px-margin-desktop max-w-container-max mx-auto overflow-hidden">
-          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
-            {/* KOLOM KIRI: Teks & Aksi */}
-            <div className="lg:col-span-6 flex flex-col justify-between gap-5 sm:gap-6 z-10">
+        <section className="relative min-h-0 lg:min-h-[calc(100vh-84px)] flex items-center py-6 sm:py-8 md:py-12 lg:py-14 px-4 sm:px-6 md:px-margin-desktop max-w-container-max mx-auto overflow-hidden">
+          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
+            {/* KOLOM KIRI: Teks & Aksi (45% -> lg:col-span-5) */}
+            <div className="lg:col-span-5 flex flex-col justify-center gap-3 sm:gap-4 lg:gap-6 z-10">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 sm:px-3.5 py-1.5 rounded-full bg-[#EBF1F9] border border-[#D9E3F0] text-slate-700 text-xs font-medium w-fit mb-3 sm:mb-4">
-                  <svg className="w-4 h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:py-1.5 rounded-full bg-[#EBF1F9] border border-[#D9E3F0] text-slate-700 text-xs font-medium w-fit mb-2 sm:mb-3.5">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                   </svg>
                   <span className="text-slate-800 font-semibold tracking-wide text-xs">{landingConfig.heroBadge}</span>
                 </div>
 
                 <h1
-                  className="font-display-lg text-3xl sm:text-4xl md:text-5xl lg:text-[56px] lg:leading-[64px] font-bold text-on-surface mb-3 sm:mb-4 tracking-tight"
+                  className="font-display-lg text-2xl sm:text-3xl md:text-4xl lg:text-[44px] xl:text-[50px] lg:leading-[1.18] font-bold text-on-surface mb-2 sm:mb-3.5 tracking-tight"
                   style={{ color: 'rgb(15, 23, 42)' }}
                 >
                   {landingConfig.heroTitle}
                 </h1>
 
-                <p className="font-body-lg text-sm sm:text-base md:text-lg text-on-surface-variant max-w-xl leading-relaxed">
+                <p className="font-body-lg text-xs sm:text-sm md:text-base text-on-surface-variant max-w-lg leading-relaxed">
                   {landingConfig.heroSubtitle}
                 </p>
               </div>
 
-              {/* Tombol CTA */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 mt-4 sm:mt-6 pt-1">
+              {/* Tombol CTA (Berdampingan dan Ringkas) */}
+              <div className="flex flex-row items-center gap-2.5 sm:gap-3.5 pt-1">
                 <a
                   href="#katalog"
                   onClick={(e) => scrollToSection(e, 'katalog', 'katalog')}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-sm shadow-md transition-all active:scale-98"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-emerald-800 hover:bg-emerald-900 text-white font-semibold text-xs sm:text-sm shadow-sm hover:shadow-md transition-all active:scale-98 flex-1 sm:flex-initial text-center"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                  Lihat Katalog Sapi
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  <span>Lihat Katalog</span>
                 </a>
                 <a
                   href="#lokasi"
                   onClick={(e) => scrollToSection(e, 'lokasi', 'lokasi')}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-[#EBF1F9] hover:bg-slate-200 text-slate-800 font-semibold text-sm transition-all active:scale-98"
+                  className="inline-flex items-center justify-center gap-1.5 sm:gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-[#EBF1F9] hover:bg-slate-200 text-slate-800 font-semibold text-xs sm:text-sm transition-all active:scale-98 flex-1 sm:flex-initial text-center"
                 >
-                  <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-                  Kunjungi Kandang
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-slate-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                  <span>Kunjungi Kandang</span>
                 </a>
               </div>
             </div>
 
-            {/* KOLOM KANAN: Slider Foto Showcase Kandang & Sapi */}
-            <div className="lg:col-span-6 relative w-full h-[280px] sm:h-[360px] md:h-[420px] lg:h-[480px] rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm bg-slate-100 z-10 group mt-4 lg:mt-0">
+            {/* KOLOM KANAN: Slider Foto Showcase (55% -> lg:col-span-7, Aspect Ratio 16:10) */}
+            <div className="lg:col-span-7 relative w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-sm bg-slate-100 z-10 group mt-2 lg:mt-0">
               {heroImages.map((slide, idx) => (
                 <img
                   key={idx}
@@ -270,13 +270,13 @@ const LandingPage = ({ cattleList = [] }) => {
               ))}
 
               {/* Titik Indikator Presisi di Tengah Bawah */}
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full bg-black/35 backdrop-blur-md z-10">
+              <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-black/35 backdrop-blur-md z-10">
                 {heroImages.map((_, idx) => (
                   <button
                     key={idx}
                     onClick={() => setCurrentSlide(idx)}
                     className={`h-1.5 rounded-full transition-all duration-300 ${
-                      idx === currentSlide ? 'w-6 bg-white shadow-sm' : 'w-2 bg-white/40 hover:bg-white/70'
+                      idx === currentSlide ? 'w-5 sm:w-6 bg-white shadow-sm' : 'w-1.5 sm:w-2 bg-white/40 hover:bg-white/70'
                     }`}
                     aria-label={`Slide ${idx + 1}`}
                   />
