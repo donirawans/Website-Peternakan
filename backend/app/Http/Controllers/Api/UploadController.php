@@ -45,6 +45,9 @@ class UploadController extends Controller
             $filename = time() . '_' . uniqid() . '.' . $extension;
             $path = $file->storeAs($folder, $filename, 'public');
             $fullUrl = asset('storage/' . $path);
+            if (str_contains($fullUrl, 'railway.app') || config('app.env') === 'production') {
+                $fullUrl = str_replace('http://', 'https://', $fullUrl);
+            }
             $urls[] = $fullUrl;
         }
 

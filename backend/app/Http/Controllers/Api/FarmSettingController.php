@@ -13,10 +13,16 @@ class FarmSettingController extends Controller
         if (empty($url) || !is_string($url)) {
             return $url;
         }
-        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://') || str_starts_with($url, 'blob:') || str_starts_with($url, 'data:')) {
+        if (str_starts_with($url, 'blob:') || str_starts_with($url, 'data:')) {
             return $url;
         }
-        return asset(ltrim($url, '/'));
+        if (!str_starts_with($url, 'http://') && !str_starts_with($url, 'https://')) {
+            $url = asset(ltrim($url, '/'));
+        }
+        if (str_contains($url, 'railway.app') || config('app.env') === 'production' || request()->server('HTTP_X_FORWARDED_PROTO') === 'https') {
+            $url = str_replace('http://', 'https://', $url);
+        }
+        return $url;
     }
 
     private function transformSettings(FarmSetting $settings)

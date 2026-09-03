@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom';
 import { farmSettingAPI, bankAccountAPI, uploadAPI, authAPI } from '../services/api';
 import ImageCropper from '../components/ImageCropper';
 import { DEFAULT_LANDING_CONFIG, getLandingSettings, saveLandingSettings, FEATURE_ICONS, DEFAULT_HERO_IMAGES } from '../utils/landingSettings';
-import { resolveMediaUrl } from '../utils/imageUrl';
+import { resolveMediaUrl, ensureHttps } from '../utils/imageUrl';
 
 const TABS = [
   { key: 'profil', label: 'Profil & Operasional Kandang' },
@@ -746,9 +746,9 @@ const AkunTab = ({ settings, onChange, registerSave }) => {
 const LandingTab = ({ settings, onChange }) => {
   const landing = getLandingSettings({
     ...settings.landing,
-    hero_image_1: settings.landing?.hero_image_1 ?? settings.hero_image_1 ?? '',
-    hero_image_2: settings.landing?.hero_image_2 ?? settings.hero_image_2 ?? '',
-    hero_image_3: settings.landing?.hero_image_3 ?? settings.hero_image_3 ?? '',
+    hero_image_1: ensureHttps(settings.landing?.hero_image_1 ?? settings.hero_image_1 ?? ''),
+    hero_image_2: ensureHttps(settings.landing?.hero_image_2 ?? settings.hero_image_2 ?? ''),
+    hero_image_3: ensureHttps(settings.landing?.hero_image_3 ?? settings.hero_image_3 ?? ''),
   });
 
   const [cropperState, setCropperState] = useState({
@@ -756,6 +756,7 @@ const LandingTab = ({ settings, onChange }) => {
     index: null,
     imageSrc: null,
   });
+  const [localPreviews, setLocalPreviews] = useState({});
   const [uploadingIndex, setUploadingIndex] = useState(null);
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -763,11 +764,15 @@ const LandingTab = ({ settings, onChange }) => {
   const fileInputRefs = [fileInputRef1, fileInputRef2, fileInputRef3];
 
   const set = (patch) => {
-    const updated = { ...landing, ...patch };
+    const normalizedPatch = {};
+    for (const [k, v] of Object.entries(patch)) {
+      normalizedPatch[k] = typeof v === 'string' ? ensureHttps(v) : v;
+    }
+    const updated = { ...landing, ...normalizedPatch };
     onChange('landing', updated);
-    if ('hero_image_1' in patch) onChange('hero_image_1', patch.hero_image_1);
-    if ('hero_image_2' in patch) onChange('hero_image_2', patch.hero_image_2);
-    if ('hero_image_3' in patch) onChange('hero_image_3', patch.hero_image_3);
+    if ('hero_image_1' in normalizedPatch) onChange('hero_image_1', normalizedPatch.hero_image_1);
+    if ('hero_image_2' in normalizedPatch) onChange('hero_image_2', normalizedPatch.hero_image_2);
+    if ('hero_image_3' in normalizedPatch) onChange('hero_image_3', normalizedPatch.hero_image_3);
   };
 
   const handleFileSelect = (index, e) => {
@@ -792,7 +797,8 @@ const LandingTab = ({ settings, onChange }) => {
     if (index === null || index === undefined) return;
 
     const key = `hero_image_${index + 1}`;
-    // 1. Seketika perbarui thumbnail preview gambar slide dengan Object URL
+    // 1. Seketika simpan preview URL lokal (blob object URL) agar tampilan langsung terganti
+    setLocalPreviews((prev) => ({ ...prev, [index]: previewUrl }));
     set({ [key]: previewUrl });
     setCropperState({ isOpen: false, index: null, imageSrc: null });
 
@@ -803,9 +809,11 @@ const LandingTab = ({ settings, onChange }) => {
         type: 'image/jpeg',
       });
       const res = await uploadAPI.uploadFiles([file], 'hero_banners');
-      const serverUrl = res?.data?.urls?.[0] || res?.data?.url;
+      let serverUrl = res?.data?.urls?.[0] || res?.data?.url;
       if (serverUrl) {
+        serverUrl = ensureHttps(serverUrl);
         set({ [key]: serverUrl });
+        setLocalPreviews((prev) => ({ ...prev, [index]: serverUrl }));
       }
     } catch (err) {
       console.error('Gagal upload gambar slide:', err);
@@ -885,7 +893,7 @@ const LandingTab = ({ settings, onChange }) => {
                 const key = `hero_image_${num}`;
                 const val = landing[key] || '';
                 const fallbackUrl = DEFAULT_HERO_IMAGES[idx] || '';
-                const displayUrl = val ? resolveMediaUrl(val) : fallbackUrl;
+                const displayUrl = localPreviews[idx] || (val ? resolveMediaUrl(val) : fallbackUrl);
                 const isUploading = uploadingIndex === idx;
 
                 return (
@@ -893,7 +901,7 @@ const LandingTab = ({ settings, onChange }) => {
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-label-sm text-label-sm font-bold text-on-surface">Slide {num}</span>
-                        {val ? (
+                        {val || localPreviews[idx] ? (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
                             Kustom
                           </span>
@@ -923,10 +931,17 @@ const LandingTab = ({ settings, onChange }) => {
                           </div>
                         )}
 
-                        {val && !isUploading && (
+                        {(val || localPreviews[idx]) && !isUploading && (
                           <button
                             type="button"
-                            onClick={() => set({ [key]: '' })}
+                            onClick={() => {
+                              setLocalPreviews((prev) => {
+                                const next = { ...prev };
+                                delete next[idx];
+                                return next;
+                              });
+                              set({ [key]: '' });
+                            }}
                             title="Hapus gambar kustom (kembali ke default)"
                             className="absolute top-2 right-2 bg-black/60 hover:bg-rose-600 text-white p-1 rounded-full text-xs transition-colors backdrop-blur-sm shadow-sm z-10"
                           >
@@ -942,7 +957,17 @@ const LandingTab = ({ settings, onChange }) => {
                         type="text"
                         placeholder="https://... atau /storage/..."
                         value={val}
-                        onChange={(e) => set({ [key]: e.target.value })}
+                        onChange={(e) => {
+                          const cleanVal = ensureHttps(e.target.value);
+                          set({ [key]: cleanVal });
+                          if (localPreviews[idx]) {
+                            setLocalPreviews((prev) => {
+                              const next = { ...prev };
+                              delete next[idx];
+                              return next;
+                            });
+                          }
+                        }}
                       />
                     </div>
 
@@ -1159,19 +1184,24 @@ const FarmSettingsPage = ({ settings, onSave, defaultTab = 'profil' }) => {
         setIsSaving(false);
         return;
       } else if (activeTab === 'landing') {
-        const landingPayload = getLandingSettings(localSettings.landing);
+        const landingPayload = getLandingSettings({
+          ...localSettings.landing,
+          hero_image_1: ensureHttps(localSettings.landing?.hero_image_1 || localSettings.hero_image_1 || ''),
+          hero_image_2: ensureHttps(localSettings.landing?.hero_image_2 || localSettings.hero_image_2 || ''),
+          hero_image_3: ensureHttps(localSettings.landing?.hero_image_3 || localSettings.hero_image_3 || ''),
+        });
         saveLandingSettings(landingPayload);
         const payload = {
-          hero_image_1: landingPayload.hero_image_1 || localSettings.hero_image_1 || '',
-          hero_image_2: landingPayload.hero_image_2 || localSettings.hero_image_2 || '',
-          hero_image_3: landingPayload.hero_image_3 || localSettings.hero_image_3 || '',
+          hero_image_1: landingPayload.hero_image_1,
+          hero_image_2: landingPayload.hero_image_2,
+          hero_image_3: landingPayload.hero_image_3,
           landing: landingPayload,
         };
         const response = await farmSettingAPI.update(payload);
         if (response?.data) {
           setLocalSettings((prev) => ({ ...prev, ...response.data, landing: landingPayload }));
         }
-        onSave(localSettings);
+        onSave({ ...localSettings, ...payload });
         setSaved(true);
         setTimeout(() => setSaved(false), 2500);
         setIsSaving(false);

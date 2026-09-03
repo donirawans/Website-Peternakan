@@ -206,32 +206,67 @@ const LandingPage = ({ cattleList = [] }) => {
 
       <main className="flex-grow pt-[76px] sm:pt-[84px] overflow-x-hidden">
         {/* Hero Section */}
-        <section className="relative min-h-0 lg:min-h-[calc(100vh-84px)] flex items-center py-6 sm:py-8 md:py-12 lg:py-14 px-4 sm:px-6 md:px-margin-desktop max-w-container-max mx-auto overflow-hidden">
-          <div className="w-full grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
-            {/* KOLOM KIRI: Teks & Aksi (45% -> lg:col-span-5) */}
-            <div className="lg:col-span-5 flex flex-col justify-center gap-3 sm:gap-4 lg:gap-6 z-10">
-              <div>
-                <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:py-1.5 rounded-full bg-[#EBF1F9] border border-[#D9E3F0] text-slate-700 text-xs font-medium w-fit mb-2 sm:mb-3.5">
-                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                  </svg>
-                  <span className="text-slate-800 font-semibold tracking-wide text-xs">{landingConfig.heroBadge}</span>
-                </div>
-
-                <h1
-                  className="font-display-lg text-2xl sm:text-3xl md:text-4xl lg:text-[44px] xl:text-[50px] lg:leading-[1.18] font-bold text-on-surface mb-2 sm:mb-3.5 tracking-tight"
-                  style={{ color: 'rgb(15, 23, 42)' }}
-                >
-                  {landingConfig.heroTitle}
-                </h1>
-
-                <p className="font-body-lg text-xs sm:text-sm md:text-base text-on-surface-variant max-w-lg leading-relaxed">
-                  {landingConfig.heroSubtitle}
-                </p>
+        <section className="relative min-h-0 lg:min-h-[calc(100vh-84px)] flex items-center pt-4 sm:pt-6 md:pt-10 lg:pt-12 pb-8 sm:pb-12 md:pb-16 px-4 sm:px-6 md:px-margin-desktop max-w-container-max mx-auto overflow-hidden">
+          <div className="w-full flex flex-col lg:grid lg:grid-cols-12 gap-4 sm:gap-5 lg:gap-10 items-center">
+            
+            {/* 1. ATAS DI MOBILE (Badge & Judul Utama) */}
+            <div className="order-1 lg:col-span-5 lg:col-start-1 lg:row-start-1 lg:self-end z-10 w-full">
+              <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 py-1 sm:py-1.5 rounded-full bg-[#EBF1F9] border border-[#D9E3F0] text-slate-700 text-xs font-medium w-fit mb-2 sm:mb-3.5">
+                <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span className="text-slate-800 font-semibold tracking-wide text-xs">{landingConfig.heroBadge}</span>
               </div>
 
+              <h1
+                className="font-display-lg text-2xl sm:text-3xl md:text-4xl lg:text-[44px] xl:text-[50px] lg:leading-[1.18] font-bold text-on-surface tracking-tight"
+                style={{ color: 'rgb(15, 23, 42)' }}
+              >
+                {landingConfig.heroTitle}
+              </h1>
+            </div>
+
+            {/* 2. TENGAH DI MOBILE (Slider Hero Image Carousel - 16:9 di HP) */}
+            <div className="order-2 lg:col-span-7 lg:col-start-6 lg:row-start-1 lg:row-span-2 relative w-full aspect-[16/9] sm:aspect-[16/10] lg:aspect-[16/10] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm bg-slate-100 z-10 group my-1 lg:my-0">
+              {heroImages.map((slide, idx) => (
+                <img
+                  key={idx}
+                  src={slide.url}
+                  alt="Dokumentasi Kandang Dastro"
+                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
+                    idx === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 pointer-events-none'
+                  }`}
+                  onError={(e) => {
+                    if (DEFAULT_HERO_IMAGES[idx] && e.target.src !== DEFAULT_HERO_IMAGES[idx]) {
+                      e.target.src = DEFAULT_HERO_IMAGES[idx];
+                    }
+                  }}
+                />
+              ))}
+
+              {/* Titik Indikator Presisi di Tengah Bawah */}
+              <div className="absolute bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-black/35 backdrop-blur-md z-10">
+                {heroImages.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentSlide(idx)}
+                    className={`h-1.5 rounded-full transition-all duration-300 ${
+                      idx === currentSlide ? 'w-5 sm:w-6 bg-white shadow-sm' : 'w-1.5 sm:w-2 bg-white/40 hover:bg-white/70'
+                    }`}
+                    aria-label={`Slide ${idx + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* 3. BAWAH DI MOBILE (Paragraf Deskripsi & Tombol CTA) */}
+            <div className="order-3 lg:col-span-5 lg:col-start-1 lg:row-start-2 lg:self-start flex flex-col gap-3.5 sm:gap-4 lg:gap-5 z-10 w-full">
+              <p className="font-body-lg text-xs sm:text-sm md:text-base text-on-surface-variant max-w-lg leading-relaxed">
+                {landingConfig.heroSubtitle}
+              </p>
+
               {/* Tombol CTA (Berdampingan dan Ringkas) */}
-              <div className="flex flex-row items-center gap-2.5 sm:gap-3.5 pt-1">
+              <div className="flex flex-row items-center gap-2.5 sm:gap-3.5 pt-0.5">
                 <a
                   href="#katalog"
                   onClick={(e) => scrollToSection(e, 'katalog', 'katalog')}
@@ -251,45 +286,13 @@ const LandingPage = ({ cattleList = [] }) => {
               </div>
             </div>
 
-            {/* KOLOM KANAN: Slider Foto Showcase (55% -> lg:col-span-7, Aspect Ratio 16:10) */}
-            <div className="lg:col-span-7 relative w-full aspect-[16/10] rounded-2xl overflow-hidden shadow-sm bg-slate-100 z-10 group mt-2 lg:mt-0">
-              {heroImages.map((slide, idx) => (
-                <img
-                  key={idx}
-                  src={slide.url}
-                  alt="Dokumentasi Kandang Dastro"
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ease-in-out ${
-                    idx === currentSlide ? 'opacity-100 scale-100' : 'opacity-0 pointer-events-none'
-                  }`}
-                  onError={(e) => {
-                    if (DEFAULT_HERO_IMAGES[idx] && e.target.src !== DEFAULT_HERO_IMAGES[idx]) {
-                      e.target.src = DEFAULT_HERO_IMAGES[idx];
-                    }
-                  }}
-                />
-              ))}
-
-              {/* Titik Indikator Presisi di Tengah Bawah */}
-              <div className="absolute bottom-3 sm:bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full bg-black/35 backdrop-blur-md z-10">
-                {heroImages.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentSlide(idx)}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      idx === currentSlide ? 'w-5 sm:w-6 bg-white shadow-sm' : 'w-1.5 sm:w-2 bg-white/40 hover:bg-white/70'
-                    }`}
-                    aria-label={`Slide ${idx + 1}`}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
           {/* Abstract background */}
           <div className="absolute top-0 right-0 -mr-[20%] -mt-[10%] w-[60%] h-[80%] bg-surface-container-low rounded-full blur-[100px] -z-10" />
         </section>
 
         {/* Cattle Catalog Grid (#katalog) */}
-        <section id="katalog" className="scroll-mt-24 max-w-container-max mx-auto px-4 sm:px-6 md:px-margin-desktop pt-4 pb-16">
+        <section id="katalog" className="scroll-mt-24 max-w-container-max mx-auto px-4 sm:px-6 md:px-margin-desktop pt-4 sm:pt-6 pb-16">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8 sm:mb-10 gap-4 sm:gap-6">
             <div>
               <h2 className="font-headline-lg text-2xl sm:text-3xl text-on-surface font-bold mb-1">Katalog Stok Sapi</h2>
