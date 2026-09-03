@@ -27,15 +27,19 @@ class FarmSettingController extends Controller
 
     private function transformSettings(FarmSetting $settings)
     {
-        $settings->hero_image_1 = $this->formatFullUrl($settings->hero_image_1);
-        $settings->hero_image_2 = $this->formatFullUrl($settings->hero_image_2);
-        $settings->hero_image_3 = $this->formatFullUrl($settings->hero_image_3);
+        $h1 = $settings->hero_image_1 ?: ($settings->landing['hero_image_1'] ?? '');
+        $h2 = $settings->hero_image_2 ?: ($settings->landing['hero_image_2'] ?? '');
+        $h3 = $settings->hero_image_3 ?: ($settings->landing['hero_image_3'] ?? '');
+
+        $settings->hero_image_1 = $this->formatFullUrl($h1);
+        $settings->hero_image_2 = $this->formatFullUrl($h2);
+        $settings->hero_image_3 = $this->formatFullUrl($h3);
 
         if (is_array($settings->landing)) {
             $landing = $settings->landing;
-            if (isset($landing['hero_image_1'])) $landing['hero_image_1'] = $this->formatFullUrl($landing['hero_image_1']);
-            if (isset($landing['hero_image_2'])) $landing['hero_image_2'] = $this->formatFullUrl($landing['hero_image_2']);
-            if (isset($landing['hero_image_3'])) $landing['hero_image_3'] = $this->formatFullUrl($landing['hero_image_3']);
+            $landing['hero_image_1'] = $settings->hero_image_1;
+            $landing['hero_image_2'] = $settings->hero_image_2;
+            $landing['hero_image_3'] = $settings->hero_image_3;
             $settings->landing = $landing;
         }
 
@@ -78,21 +82,14 @@ class FarmSettingController extends Controller
         $settingsData = $validatedData;
         unset($settingsData['landing']);
 
-        // Jika hero_image dikirim di dalam objek landing, sinkronkan ke root field
-        if ($request->has('landing.hero_image_1') && !isset($settingsData['hero_image_1'])) {
-            $settingsData['hero_image_1'] = $request->input('landing.hero_image_1');
-        }
-        if ($request->has('landing.hero_image_2') && !isset($settingsData['hero_image_2'])) {
-            $settingsData['hero_image_2'] = $request->input('landing.hero_image_2');
-        }
-        if ($request->has('landing.hero_image_3') && !isset($settingsData['hero_image_3'])) {
-            $settingsData['hero_image_3'] = $request->input('landing.hero_image_3');
-        }
+        // Sinkronkan hero_image dari root payload maupun landing payload
+        $hero1 = $request->input('hero_image_1') ?: $request->input('landing.hero_image_1');
+        $hero2 = $request->input('hero_image_2') ?: $request->input('landing.hero_image_2');
+        $hero3 = $request->input('hero_image_3') ?: $request->input('landing.hero_image_3');
 
-        // Format relative storage path to full URL jika perlu
-        if (isset($settingsData['hero_image_1'])) $settingsData['hero_image_1'] = $this->formatFullUrl($settingsData['hero_image_1']);
-        if (isset($settingsData['hero_image_2'])) $settingsData['hero_image_2'] = $this->formatFullUrl($settingsData['hero_image_2']);
-        if (isset($settingsData['hero_image_3'])) $settingsData['hero_image_3'] = $this->formatFullUrl($settingsData['hero_image_3']);
+        if ($hero1 !== null) $settingsData['hero_image_1'] = $this->formatFullUrl($hero1);
+        if ($hero2 !== null) $settingsData['hero_image_2'] = $this->formatFullUrl($hero2);
+        if ($hero3 !== null) $settingsData['hero_image_3'] = $this->formatFullUrl($hero3);
 
         $settings = FarmSetting::updateOrCreate(['id' => 1], $settingsData);
 
