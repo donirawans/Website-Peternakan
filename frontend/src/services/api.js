@@ -193,9 +193,13 @@ export const farmSettingAPI = {
 };
 
 export const uploadAPI = {
-  uploadFiles: async (files) => {
+  uploadFiles: async (files, folder = 'uploads') => {
     const formData = new FormData();
-    for (const file of files) {
+    if (folder) {
+      formData.append('folder', folder);
+    }
+    const fileList = Array.isArray(files) ? files : [files];
+    for (const file of fileList) {
       formData.append('files[]', file);
     }
     const response = await api.post('/admin/upload', formData, {

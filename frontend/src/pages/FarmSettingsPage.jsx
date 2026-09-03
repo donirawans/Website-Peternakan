@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { farmSettingAPI, bankAccountAPI, uploadAPI, authAPI } from '../services/api';
+import ImageCropper from '../components/ImageCropper';
 import { DEFAULT_LANDING_CONFIG, getLandingSettings, saveLandingSettings, FEATURE_ICONS, DEFAULT_HERO_IMAGES } from '../utils/landingSettings';
 import { resolveMediaUrl } from '../utils/imageUrl';
 
@@ -750,6 +751,11 @@ const LandingTab = ({ settings, onChange }) => {
     hero_image_3: settings.landing?.hero_image_3 ?? settings.hero_image_3 ?? '',
   });
 
+  const [cropperState, setCropperState] = useState({
+    isOpen: false,
+    index: null,
+    imageSrc: null,
+  });
   const [uploadingIndex, setUploadingIndex] = useState(null);
   const fileInputRef1 = useRef(null);
   const fileInputRef2 = useRef(null);
@@ -764,22 +770,48 @@ const LandingTab = ({ settings, onChange }) => {
     if ('hero_image_3' in patch) onChange('hero_image_3', patch.hero_image_3);
   };
 
-  const handleFileUpload = async (index, e) => {
+  const handleFileSelect = (index, e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Baca file sebagai data URL untuk modal Cropper
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropperState({
+        isOpen: true,
+        index,
+        imageSrc: reader.result,
+      });
+    };
+    reader.readAsDataURL(file);
+    if (e.target) e.target.value = '';
+  };
+
+  const handleCroppedApply = async (previewUrl, croppedBlob) => {
+    const index = cropperState.index;
+    if (index === null || index === undefined) return;
+
+    const key = `hero_image_${index + 1}`;
+    // 1. Seketika perbarui thumbnail preview gambar slide dengan Object URL
+    set({ [key]: previewUrl });
+    setCropperState({ isOpen: false, index: null, imageSrc: null });
+
+    // 2. Unggah Blob hasil crop ke backend Laravel pada folder 'hero_banners'
     try {
       setUploadingIndex(index);
-      const res = await uploadAPI.uploadFiles([file]);
-      if (res?.data?.urls?.[0]) {
-        const urlKey = `hero_image_${index + 1}`;
-        set({ [urlKey]: res.data.urls[0] });
+      const file = new File([croppedBlob], `hero_slide_${index + 1}_${Date.now()}.jpg`, {
+        type: 'image/jpeg',
+      });
+      const res = await uploadAPI.uploadFiles([file], 'hero_banners');
+      const serverUrl = res?.data?.urls?.[0] || res?.data?.url;
+      if (serverUrl) {
+        set({ [key]: serverUrl });
       }
     } catch (err) {
       console.error('Gagal upload gambar slide:', err);
-      alert('Gagal mengunggah gambar: ' + (err?.response?.data?.message || err.message));
+      alert('Gagal mengunggah foto ke server: ' + (err?.response?.data?.message || err.message));
     } finally {
       setUploadingIndex(null);
-      if (e.target) e.target.value = '';
     }
   };
 
@@ -802,6 +834,16 @@ const LandingTab = ({ settings, onChange }) => {
 
   return (
     <div className="space-y-8">
+      {/* Modal Image Cropper untuk Hero Slide */}
+      {cropperState.isOpen && (
+        <ImageCropper
+          imageSrc={cropperState.imageSrc}
+          aspect={16 / 9}
+          onApply={handleCroppedApply}
+          onCancel={() => setCropperState({ isOpen: false, index: null, imageSrc: null })}
+        />
+      )}
+
       <div className="bg-[#2D6A4F]/10 text-[#2D6A4F] border border-[#2D6A4F]/20 rounded-xl px-4 py-3 text-sm flex items-start gap-2">
         <span className="material-symbols-outlined text-[18px]">info</span>
         <span>
@@ -832,10 +874,10 @@ const LandingTab = ({ settings, onChange }) => {
           <div className="pt-4 border-t border-outline-variant/20">
             <h4 className="font-label-md text-label-md text-on-surface font-bold mb-1 flex items-center gap-2">
               <span className="material-symbols-outlined text-primary text-[20px]">view_carousel</span>
-              Gambar Slide Carousel (3 Slide)
+              Gambar Slide Carousel (3 Slide Banner)
             </h4>
             <p className="font-body-md text-xs text-on-surface-variant mb-4">
-              Atur gambar untuk masing-masing slide carousel pada tampilan utama. Masukkan URL gambar atau unggah langsung dari perangkat.
+              Pilih foto untuk masing-masing slide dengan rasio banner (16:9). Gambar yang diunggah akan otomatis dipotong dan disimpan secara permanen.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -844,6 +886,7 @@ const LandingTab = ({ settings, onChange }) => {
                 const val = landing[key] || '';
                 const fallbackUrl = DEFAULT_HERO_IMAGES[idx] || '';
                 const displayUrl = val ? resolveMediaUrl(val) : fallbackUrl;
+                const isUploading = uploadingIndex === idx;
 
                 return (
                   <div key={num} className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 flex flex-col justify-between space-y-3">
@@ -871,12 +914,21 @@ const LandingTab = ({ settings, onChange }) => {
                             e.target.src = fallbackUrl;
                           }}
                         />
-                        {val && (
+
+                        {/* Spinner Overlay saat upload */}
+                        {isUploading && (
+                          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center gap-2 text-white z-20 animate-fade-in">
+                            <div className="animate-spin rounded-full h-7 w-7 border-2 border-white border-t-transparent" />
+                            <span className="text-[11px] font-bold">Mengunggah ke server...</span>
+                          </div>
+                        )}
+
+                        {val && !isUploading && (
                           <button
                             type="button"
                             onClick={() => set({ [key]: '' })}
-                            title="Hapus URL kustom (kembali ke default)"
-                            className="absolute top-2 right-2 bg-black/60 hover:bg-rose-600 text-white p-1 rounded-full text-xs transition-colors backdrop-blur-sm shadow-sm"
+                            title="Hapus gambar kustom (kembali ke default)"
+                            className="absolute top-2 right-2 bg-black/60 hover:bg-rose-600 text-white p-1 rounded-full text-xs transition-colors backdrop-blur-sm shadow-sm z-10"
                           >
                             <span className="material-symbols-outlined text-[16px]">close</span>
                           </button>
@@ -894,25 +946,25 @@ const LandingTab = ({ settings, onChange }) => {
                       />
                     </div>
 
-                    {/* Upload Button */}
+                    {/* Upload & Crop Button */}
                     <div>
                       <input
                         type="file"
                         ref={fileInputRefs[idx]}
-                        onChange={(e) => handleFileUpload(idx, e)}
-                        accept="image/*"
+                        onChange={(e) => handleFileSelect(idx, e)}
+                        accept="image/jpeg,image/png,image/webp,image/jpg"
                         className="hidden"
                       />
                       <button
                         type="button"
-                        disabled={uploadingIndex === idx}
+                        disabled={isUploading}
                         onClick={() => fileInputRefs[idx].current?.click()}
-                        className="w-full py-2 px-3 rounded-lg border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary font-label-sm text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98"
+                        className="w-full py-2 px-3 rounded-lg border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary font-label-sm text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98 disabled:opacity-50"
                       >
                         <span className="material-symbols-outlined text-[16px]">
-                          {uploadingIndex === idx ? 'hourglass_top' : 'upload'}
+                          {isUploading ? 'hourglass_top' : 'crop_free'}
                         </span>
-                        {uploadingIndex === idx ? 'Mengunggah...' : `Upload Foto Slide ${num}`}
+                        {isUploading ? 'Mengunggah...' : `Pilih & Crop Foto Slide ${num}`}
                       </button>
                     </div>
                   </div>

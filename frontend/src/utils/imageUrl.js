@@ -6,7 +6,7 @@ const apiBaseUrl = () =>
 
 export const resolveMediaUrl = (url) => {
   if (!url || typeof url !== 'string') return '';
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('blob:') || url.startsWith('data:')) return url;
   return `${apiBaseUrl()}/${url.replace(/^\//, '')}`;
 };
 

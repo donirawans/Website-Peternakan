@@ -8,9 +8,41 @@ use Illuminate\Http\Request;
 
 class FarmSettingController extends Controller
 {
+    private function formatFullUrl($url)
+    {
+        if (empty($url) || !is_string($url)) {
+            return $url;
+        }
+        if (str_starts_with($url, 'http://') || str_starts_with($url, 'https://') || str_starts_with($url, 'blob:') || str_starts_with($url, 'data:')) {
+            return $url;
+        }
+        return asset(ltrim($url, '/'));
+    }
+
+    private function transformSettings(FarmSetting $settings)
+    {
+        $settings->hero_image_1 = $this->formatFullUrl($settings->hero_image_1);
+        $settings->hero_image_2 = $this->formatFullUrl($settings->hero_image_2);
+        $settings->hero_image_3 = $this->formatFullUrl($settings->hero_image_3);
+
+        if (is_array($settings->landing)) {
+            $landing = $settings->landing;
+            if (isset($landing['hero_image_1'])) $landing['hero_image_1'] = $this->formatFullUrl($landing['hero_image_1']);
+            if (isset($landing['hero_image_2'])) $landing['hero_image_2'] = $this->formatFullUrl($landing['hero_image_2']);
+            if (isset($landing['hero_image_3'])) $landing['hero_image_3'] = $this->formatFullUrl($landing['hero_image_3']);
+            $settings->landing = $landing;
+        }
+
+        return $settings;
+    }
+
     public function getSettings()
     {
         $settings = FarmSetting::first();
+
+        if ($settings) {
+            $settings = $this->transformSettings($settings);
+        }
 
         return response()->json([
             'status' => 200,
@@ -51,12 +83,17 @@ class FarmSettingController extends Controller
             $settingsData['hero_image_3'] = $request->input('landing.hero_image_3');
         }
 
+        // Format relative storage path to full URL jika perlu
+        if (isset($settingsData['hero_image_1'])) $settingsData['hero_image_1'] = $this->formatFullUrl($settingsData['hero_image_1']);
+        if (isset($settingsData['hero_image_2'])) $settingsData['hero_image_2'] = $this->formatFullUrl($settingsData['hero_image_2']);
+        if (isset($settingsData['hero_image_3'])) $settingsData['hero_image_3'] = $this->formatFullUrl($settingsData['hero_image_3']);
+
         $settings = FarmSetting::updateOrCreate(['id' => 1], $settingsData);
 
         if ($request->has('landing')) {
             $landingData = $request->input('landing');
             if (is_array($landingData)) {
-                // Pastikan hero images tersinkron juga di dalam JSON landing
+                // Pastikan hero images tersinkron juga di dalam JSON landing dengan full URL
                 if (isset($settingsData['hero_image_1'])) $landingData['hero_image_1'] = $settingsData['hero_image_1'];
                 if (isset($settingsData['hero_image_2'])) $landingData['hero_image_2'] = $settingsData['hero_image_2'];
                 if (isset($settingsData['hero_image_3'])) $landingData['hero_image_3'] = $settingsData['hero_image_3'];
@@ -66,6 +103,7 @@ class FarmSettingController extends Controller
         }
 
         $settings->refresh();
+        $settings = $this->transformSettings($settings);
 
         return response()->json([
             'status' => 200,
