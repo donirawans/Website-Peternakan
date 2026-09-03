@@ -1,0 +1,107 @@
+// Shared cattle data for the application
+export const initialCattleData = [
+  {
+    id: 'LM-01',
+    name: 'Limousin Super',
+    breed: 'Limousin',
+    gender: 'Jantan',
+    weight: 650,
+    age: 'Dewasa (Poel)',
+    ageDetail: 'Poel 1 Pasang / Siap Qurban',
+    price: 38500000,
+    status: 'Tersedia',
+    category: 'Dewasa',
+    feed: 'Rumput Gajah Segar + Konsentrat Harian',
+    notes: 'Postur punggung lebar, nafsu makan sangat lahap, kaki kokoh, dan jinak. Siap kirim atau dirawat sampai hari H Qurban.',
+    images: [
+      'https://images.unsplash.com/photo-1546445317-29f4545e9d53?w=800',
+      'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800',
+      'https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?w=800',
+    ],
+    image: 'https://images.unsplash.com/photo-1546445317-29f4545e9d53?w=800',
+    thumbnails: [
+      'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800',
+      'https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?w=800',
+    ],
+  },
+  {
+    id: 'PD-SM02',
+    name: 'Pedet Simental Super',
+    breed: 'Simental',
+    gender: 'Jantan',
+    weight: 160,
+    age: 'Pedet (6 Bln)',
+    ageDetail: 'Lepas Sapih / 6 Bulan',
+    price: 14500000,
+    status: 'Tersedia',
+    category: 'Pedet',
+    feed: 'Rumput Gajah + Susu Formula',
+    notes: 'Pedet aktif dengan nafsu makan baik. Sudah lepas sapih dan siap untuk fase bakalan.',
+    images: [
+      'https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800',
+      'https://images.unsplash.com/photo-1596733430284-f7437764b14d?w=800',
+      'https://images.unsplash.com/photo-1493962853295-0fd70327578a?w=800',
+    ],
+    image: 'https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800',
+    thumbnails: [
+      'https://images.unsplash.com/photo-1596733430284-f7437764b14d?w=800',
+      'https://images.unsplash.com/photo-1493962853295-0fd70327578a?w=800',
+    ],
+  },
+  {
+    id: 'PO-03',
+    name: 'Sapi PO Betina',
+    breed: 'Peranakan Ongole',
+    gender: 'Betina',
+    weight: 420,
+    age: 'Dara/Indukan',
+    ageDetail: 'Siap Breeding / Dara',
+    price: 22000000,
+    status: 'Booked',
+    category: 'Dewasa',
+    feed: 'Rumput Hijauan + Dedak',
+    notes: 'Sapi betina kondisi prima, siap breeding. Struktur tubuh bagus dan jinak.',
+    images: [
+      'https://images.unsplash.com/photo-1596733430284-f7437764b14d?w=800',
+      'https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800',
+      'https://images.unsplash.com/photo-1493962853295-0fd70327578a?w=800',
+    ],
+    image: 'https://images.unsplash.com/photo-1596733430284-f7437764b14d?w=800',
+    thumbnails: [
+      'https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800',
+      'https://images.unsplash.com/photo-1493962853295-0fd70327578a?w=800',
+    ],
+  },
+  {
+    id: 'BK-BR04',
+    name: 'Bakalan Brahman',
+    breed: 'Brahman',
+    gender: 'Jantan',
+    weight: 280,
+    age: 'Bakalan Muda',
+    ageDetail: 'Bakalan / 10 Bulan',
+    price: 19000000,
+    status: 'Tersedia',
+    category: 'Bakalan',
+    feed: 'Rumput Gajah Segar + Konsentrat',
+    notes: 'Bakalan dengan tulang besar dan postur ideal untuk penggemukan.',
+    images: [
+      'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800',
+      'https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?w=800',
+      'https://images.unsplash.com/photo-1546445317-29f4545e9d53?w=800',
+    ],
+    image: 'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800',
+    thumbnails: [
+      'https://images.unsplash.com/photo-1527153857715-3908f2ae5e81?w=800',
+      'https://images.unsplash.com/photo-1546445317-29f4545e9d53?w=800',
+    ],
+  },
+];
+
+export const formatPrice = (price) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+  }).format(price);
+};
