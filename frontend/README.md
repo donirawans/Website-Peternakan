@@ -66,8 +66,22 @@
 
 ---
 
-### B. Dashboard Manajemen Peternakan (Admin & Staff)
+### B. Dashboard Manajemen Peternakan (Role Admin & Staff)
 *(Halaman terproteksi dengan verifikasi token login melalui `ProtectedRoute`)*
+
+Navigasi sidebar dan fitur dashboard beradaptasi secara dinamis sesuai peran (**Role**) pengguna yang login:
+
+| Fitur / Modul | Role Admin | Role Staff | Keterangan |
+|---|:---:|:---:|---|
+| **Daftar & Master Inventaris Sapi** | ✅ | ✅ | Melihat daftar stok, detail sapi, dan filter ketersediaan |
+| **Tambah & Edit Data Sapi** | ✅ | ✅ | Form input sapi, upload multi-media & *image cropper* |
+| **Hapus Data Sapi** | ✅ | ❌ | Khusus Admin untuk menjaga integritas data |
+| **Laporan Penjualan & Transaksi** | ✅ | ✅ | Input transaksi, cetak struk invoice digital, rekap omzet |
+| **Pusat Notifikasi Survei Kandang** | ✅ | ✅ | Memantau jadwal kunjungan survei dari calon pembeli |
+| **Pengaturan Profil Diri & Password** | ✅ | ✅ | Mengubah data diri, foto profil, dan password akun |
+| **Pengaturan Kandang (Farm Settings)** | ✅ | ❌ | Khusus Admin: Jam operasional, alamat, akses truk |
+| **Manajemen Rekening Bank** | ✅ | ❌ | Khusus Admin: Tambah, edit, hapus, & aktifkan rekening |
+| **CMS Konten Landing Page** | ✅ | ❌ | Khusus Admin: Kustomisasi banner hero, USP, & teks landing |
 
 1. **Ringkasan Metrik (KPI Cards):**
    - Indikator total stok ternak, unit tersedia, sapi booked (DP terbayar), dan total terjual.
@@ -80,14 +94,14 @@
    - Sinkronisasi otomatis ke status sapi (*Lunas* $\rightarrow$ Terjual, *DP* $\rightarrow$ Booked).
    - Struk Invoice Digital interaktif (`StrukInvoiceModal`) yang siap dipratinjau dan dicetak langsung.
    - Ringkasan total pendapatan (*revenue*), jumlah transaksi lunas, transaksi pending DP, dan potensi pelunasan.
-4. **Pengaturan Peternakan & CMS Landing Page (`FarmSettingsPage`):**
+4. **Pengaturan Peternakan & CMS Landing Page (`FarmSettingsPage` - Khusus Admin):**
    - Kustomisasi nama peternakan, tagline, nomor WhatsApp hotline, jam kunjungan, dan panduan jalan.
    - Pengaturan daftar rekening bank operasional (tambah/edit/hapus/aktifkan rekening).
    - Kustomisasi teks banner, USP keunggulan, dan elemen konten Landing Page secara dinamis tanpa sentuh kode.
 5. **Notifikasi Survei Pengunjung:**
    - Notifikasi *real-time* berisi daftar calon pembeli yang mengajukan jadwal survei dengan badge status belum dibaca (*unread*), fitur tandai telah dibaca, dan hapus notifikasi.
 6. **Profil Akun & Keamanan (`ProfilePage`):**
-   - Update nama lengkap, email, foto profil administrator, dan ganti password akun.
+   - Update nama lengkap, email, foto profil pengguna (Admin/Staff), dan ganti password akun.
 
 ---
 

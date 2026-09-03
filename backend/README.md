@@ -610,12 +610,12 @@ server {
 
 ## 7. Default Akun & Data Seed
 
-Setelah menjalankan `php artisan migrate --seed`, Anda dapat menggunakan akun bawaan berikut untuk login ke sistem:
+Setelah menjalankan `php artisan migrate --seed`, sistem secara otomatis menyediakan akun bawaan untuk kedua role backoffice:
 
-| Peran (Role) | Email | Password | Hak Akses |
+| Peran (Role) | Email | Password | Wewenang & Hak Akses |
 |---|---|---|---|
-| **Admin** | `admin@kandas.com` | `kandas2026` | Akses penuh (Inventaris, Transaksi, Pengaturan, Notifikasi, Akun) |
-| **Staff** | `staff@kandas.com` | `staff2026` | Akses operasional harian |
+| 👑 **Admin** | `admin@kandas.com` | `kandas2026` | **Akses Penuh (Superuser):** Manajemen master sapi, hapus data, laporan keuangan & omzet, pengaturan profil kandang, rekening bank, CMS Landing Page, dan manajemen akun staf. |
+| 🧑‍🌾 **Staff** | `staff@kandas.com` | `staff2026` | **Akses Operasional Harian:** Input data ternak baru, upload foto/video, pembaruan status sapi (*Tersedia/Booked/Terjual*), pencatatan transaksi & cetak struk invoice, dan pemantauan notifikasi survei kandang. |
 
 ---
 
