@@ -167,6 +167,9 @@ erDiagram
         text address
         text google_maps_url
         text truck_access_note
+        string hero_image_1
+        string hero_image_2
+        string hero_image_3
         json landing
         timestamps created_at
     }

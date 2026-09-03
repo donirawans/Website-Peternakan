@@ -1,27 +1,27 @@
 const HelpCenterPage = () => {
   return (
-    <div className="p-6 md:p-8 max-w-container-max mx-auto space-y-8 pb-20 animate-fade-in">
+    <div className="p-4 sm:p-6 md:p-8 max-w-container-max mx-auto space-y-6 sm:space-y-8 pb-20 animate-fade-in">
       {/* Header */}
-      <header className="mb-8">
-        <h2 className="font-headline-lg text-headline-lg text-primary mb-2">
+      <header className="mb-4 sm:mb-8">
+        <h2 className="font-headline-lg text-xl sm:text-2xl md:text-headline-lg text-primary mb-1 sm:mb-2 font-bold">
           Pusat Bantuan &amp; Panduan Kandang
         </h2>
-        <p className="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
+        <p className="font-body-lg text-xs sm:text-sm md:text-body-lg text-on-surface-variant max-w-3xl">
           Pedoman standar kelayakan sapi kurban, SOP alur inventaris, dan kontak teknis
         </p>
       </header>
 
       {/* Top Banner CTA */}
-      <div className="bg-[#2D6A4F] text-white rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-md relative overflow-hidden">
+      <div className="bg-[#2D6A4F] text-white rounded-2xl p-5 sm:p-8 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-5 sm:gap-6 shadow-md relative overflow-hidden">
         <div className="z-10 relative">
-          <div className="inline-flex items-center gap-2 bg-white/10 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-3">
+          <div className="inline-flex items-center gap-1.5 sm:gap-2 bg-white/10 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-2 sm:mb-3">
             <span className="material-symbols-outlined text-sm">support_agent</span>
             IT &amp; Technical Support
           </div>
-          <h3 className="font-headline-md text-headline-md font-bold mb-2">
+          <h3 className="font-headline-md text-lg sm:text-xl md:text-headline-md font-bold mb-1.5 sm:mb-2">
             Kendala Sistem / Laporan Bug
           </h3>
-          <p className="font-body-md text-body-md opacity-90">
+          <p className="font-body-md text-xs sm:text-sm md:text-body-md opacity-90">
             Tim IT Support kami siap membantu Anda dari pukul 08:00 - 21:00 WIB.
           </p>
         </div>
@@ -29,9 +29,9 @@ const HelpCenterPage = () => {
           href="https://wa.me/6281234567890"
           target="_blank"
           rel="noopener noreferrer"
-          className="z-10 shrink-0 bg-white text-[#2D6A4F] font-label-md text-label-md font-bold py-3.5 px-6 rounded-full flex items-center gap-2 hover:bg-emerald-50 transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-md"
+          className="z-10 shrink-0 bg-white text-[#2D6A4F] font-label-md text-xs sm:text-sm font-bold py-3 px-5 sm:px-6 rounded-full flex items-center justify-center gap-2 hover:bg-emerald-50 transition-all active:scale-98 shadow-sm hover:shadow-md"
         >
-          <span className="material-symbols-outlined text-[20px]">forum</span>
+          <span className="material-symbols-outlined text-[18px] sm:text-[20px]">forum</span>
           Chat WhatsApp Tim Teknis
         </a>
         {/* Decorative circle */}
@@ -39,7 +39,7 @@ const HelpCenterPage = () => {
       </div>
 
       {/* 2-Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter mb-12">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 mb-12">
         {/* Left Column: SOP Status */}
         <div className="lg:col-span-6 space-y-6">
           <h4 className="font-headline-md text-headline-md text-on-surface flex items-center gap-2">

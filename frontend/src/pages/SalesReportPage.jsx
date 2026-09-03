@@ -184,9 +184,9 @@ const AddTransactionModal = ({ cattleList, onClose, onSaved }) => {
             </div>
           </div>
         </form>
-        <div className="flex justify-end gap-3 px-6 py-4 border-t border-outline-variant/20 bg-surface">
-          <button onClick={onClose} className="px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-semibold hover:bg-surface-container transition-all text-sm">Batal</button>
-          <button onClick={handleSubmit} disabled={submitting} className="px-6 py-2.5 rounded-xl bg-[#134E35] text-white font-bold hover:bg-[#0E3D29] transition-all shadow-sm active:scale-[0.99] text-sm disabled:opacity-60">
+        <div className="flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-3 px-4 sm:px-6 py-3 sm:py-4 border-t border-outline-variant/20 bg-surface">
+          <button onClick={onClose} className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-outline-variant text-on-surface-variant font-semibold hover:bg-surface-container transition-all text-sm">Batal</button>
+          <button onClick={handleSubmit} disabled={submitting} className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#134E35] text-white font-bold hover:bg-[#0E3D29] transition-all shadow-sm active:scale-[0.99] text-sm disabled:opacity-60">
             {submitting ? 'Menyimpan...' : 'Simpan Transaksi'}
           </button>
         </div>
@@ -220,18 +220,10 @@ const SalesReportPage = ({ transactions: initialTransactions, summary, onTransac
       try {
         const response = await cattleAPI.getAllAdmin();
         if (response.status === 200 && response.data) {
-          setCattleList(response.data.map(c => ({
-            id: c.ear_tag,
-            db_id: c.id,
-            name: c.name,
-            breed: c.breed || 'Unknown',
-            status: c.status || 'Tersedia',
-            kondisi: c.kondisi || 'Kondisi Prima',
-            price: c.price || 0,
-          })));
+          setCattleList(response.data);
         }
       } catch (err) {
-        console.error('Failed to load cattle:', err);
+        console.error('Failed to load cattle in sales report:', err);
       }
     };
     loadCattle();
@@ -239,13 +231,11 @@ const SalesReportPage = ({ transactions: initialTransactions, summary, onTransac
 
   const filtered = transactions.filter((t) => {
     const matchStatus = statusFilter === 'Semua' || t.status === statusFilter;
-    const q = search.toLowerCase();
     const matchSearch =
-      !q ||
-      (t.buyer_name || '').toLowerCase().includes(q) ||
-      (t.invoice_number || '').toLowerCase().includes(q) ||
-      (t.cattle?.ear_tag || '').toLowerCase().includes(q) ||
-      (t.cattle?.name || '').toLowerCase().includes(q);
+      !search ||
+      (t.invoice_number && t.invoice_number.toLowerCase().includes(search.toLowerCase())) ||
+      (t.buyer_name && t.buyer_name.toLowerCase().includes(search.toLowerCase())) ||
+      (t.cattle?.name && t.cattle.name.toLowerCase().includes(search.toLowerCase()));
     return matchStatus && matchSearch;
   });
 
@@ -339,29 +329,29 @@ const SalesReportPage = ({ transactions: initialTransactions, summary, onTransac
   };
 
   return (
-    <div className="p-6 md:p-8 max-w-[1440px] mx-auto space-y-8 pb-20 animate-fade-in">
+    <div className="p-4 sm:p-6 md:p-8 max-w-[1440px] mx-auto space-y-6 sm:space-y-8 pb-20 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pt-2">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 pt-2">
         <div>
-          <h2 className="font-headline-lg text-headline-lg text-on-surface font-bold">Laporan Penjualan &amp; Transaksi</h2>
-          <p className="font-body-md text-body-md text-on-surface-variant mt-1">Rekapitulasi penjualan sapi, status DP, dan riwayat pelunasan</p>
+          <h2 className="font-headline-lg text-xl sm:text-2xl md:text-headline-lg text-on-surface font-bold">Laporan Penjualan &amp; Transaksi</h2>
+          <p className="font-body-md text-xs sm:text-sm text-on-surface-variant mt-1">Rekapitulasi penjualan sapi, status DP, dan riwayat pelunasan</p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
+        <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full lg:w-auto">
+          <div className="relative flex-1 sm:flex-initial w-full sm:w-auto min-w-[200px]">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
-            <input className="pl-10 pr-4 py-2 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary-container text-body-md w-full md:w-56 transition-all outline-none text-sm" placeholder="Cari pembeli / invoice..." type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }} />
+            <input className="pl-10 pr-4 py-2 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary-container focus:border-primary-container text-body-md w-full sm:w-56 transition-all outline-none text-xs sm:text-sm" placeholder="Cari pembeli / invoice..." type="text" value={search} onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }} />
           </div>
-          <div className="relative">
-            <select className="appearance-none pl-4 pr-10 py-2 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary-container text-label-md font-label-md cursor-pointer outline-none text-sm" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}>
+          <div className="relative flex-1 sm:flex-initial">
+            <select className="appearance-none pl-3 sm:pl-4 pr-9 sm:pr-10 py-2 rounded-xl border border-outline-variant bg-surface focus:ring-2 focus:ring-primary-container text-label-md font-label-md cursor-pointer outline-none text-xs sm:text-sm w-full" value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setCurrentPage(1); }}>
               {STATUS_FILTERS.map((s) => <option key={s}>{s}</option>)}
             </select>
-            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-outline pointer-events-none">expand_more</span>
+            <span className="material-symbols-outlined absolute right-2.5 top-1/2 -translate-y-1/2 text-outline pointer-events-none text-sm">expand_more</span>
           </div>
-          <button onClick={() => setShowAddModal(true)} className="flex items-center gap-2 bg-[#134E35] text-white px-5 py-2 rounded-full font-label-md text-label-md hover:bg-[#0E3D29] transition-all active:scale-95 shadow-sm font-bold">
+          <button onClick={() => setShowAddModal(true)} className="flex items-center justify-center gap-2 bg-[#134E35] text-white px-4 sm:px-5 py-2 rounded-full font-label-md text-xs sm:text-sm hover:bg-[#0E3D29] transition-all active:scale-95 shadow-sm font-bold flex-1 sm:flex-initial">
             <span className="material-symbols-outlined text-[18px]">add</span>
             Catat Transaksi
           </button>
-          <button onClick={handleExportCSV} className="flex items-center gap-2 bg-surface border border-outline-variant text-on-surface px-5 py-2 rounded-full font-label-md text-label-md hover:bg-surface-container transition-all active:scale-95 font-semibold">
+          <button onClick={handleExportCSV} className="flex items-center justify-center gap-1.5 bg-surface border border-outline-variant text-on-surface px-4 py-2 rounded-full font-label-md text-xs sm:text-sm hover:bg-surface-container transition-all active:scale-95 font-semibold">
             <span className="material-symbols-outlined text-[18px]">download</span>
             Export
           </button>
@@ -369,7 +359,7 @@ const SalesReportPage = ({ transactions: initialTransactions, summary, onTransac
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
         {metrics.map((m, i) => (
           <div key={i} className={`bg-surface p-5 rounded-2xl border border-outline-variant/20 shadow-sm hover:shadow-md transition-shadow ${m.accent || ''}`}>
             <div className="flex items-center justify-between mb-3">

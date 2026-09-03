@@ -98,9 +98,9 @@ const CattleListView = ({ cattleList, dashStats, onAddCattle, onEditCattle, onDe
   const terjual = cattleList.filter((c) => c.status === 'Terjual').length;
 
   return (
-    <div className="p-6 md:p-8 max-w-[1440px] mx-auto space-y-8 pb-20">
+    <div className="p-4 sm:p-6 md:p-8 max-w-[1440px] mx-auto space-y-6 sm:space-y-8 pb-20">
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <KpiCard label="Total Stok Sapi" value={totalStok} unit="Ekor" icon="dataset" color="#2d6a4f" />
         <KpiCard label="Sapi Tersedia" value={tersedia} unit="Ekor" icon="check_circle" color="#006c48" />
         <KpiCard label="Status Booked" value={booked} unit="Ekor" icon="shopping_cart" color="#914d00" />
@@ -110,11 +110,11 @@ const CattleListView = ({ cattleList, dashStats, onAddCattle, onEditCattle, onDe
       {/* Table Card */}
       <div className="bg-surface rounded-xl border border-outline-variant/30 shadow-sm overflow-hidden">
         {/* Action Bar */}
-        <div className="p-6 border-b border-outline-variant/20 flex flex-col md:flex-row justify-between items-center gap-4 bg-surface-container-lowest">
-          <div className="flex items-center gap-3 w-full md:w-auto flex-wrap">
-            <span className="font-label-md text-label-md text-on-surface-variant font-semibold">Filter:</span>
+        <div className="p-4 sm:p-6 border-b border-outline-variant/20 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 sm:gap-4 bg-surface-container-lowest">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto">
+            <span className="font-label-md text-label-md text-on-surface-variant font-semibold text-xs sm:text-sm">Filter:</span>
             <select
-              className="bg-surface-container-low border border-outline-variant/30 rounded-lg px-4 py-2 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none"
+              className="bg-surface-container-low border border-outline-variant/30 rounded-lg px-3 sm:px-4 py-2 font-body-md text-xs sm:text-sm text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none flex-1 sm:flex-initial"
               value={filterFase}
               onChange={(e) => {
                 setFilterFase(e.target.value);
@@ -127,7 +127,7 @@ const CattleListView = ({ cattleList, dashStats, onAddCattle, onEditCattle, onDe
               <option value="dewasa">Dewasa</option>
             </select>
             <select
-              className="bg-surface-container-low border border-outline-variant/30 rounded-lg px-4 py-2 font-body-md text-body-md text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none"
+              className="bg-surface-container-low border border-outline-variant/30 rounded-lg px-3 sm:px-4 py-2 font-body-md text-xs sm:text-sm text-on-surface focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none flex-1 sm:flex-initial"
               value={filterStatus}
               onChange={(e) => {
                 setFilterStatus(e.target.value);
@@ -142,9 +142,9 @@ const CattleListView = ({ cattleList, dashStats, onAddCattle, onEditCattle, onDe
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="w-full md:w-auto bg-[#2D6A4F] hover:bg-[#23533e] text-white font-label-md text-label-md py-3 px-6 rounded-full flex items-center justify-center gap-2 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5"
+            className="w-full sm:w-auto bg-[#2D6A4F] hover:bg-[#23533e] text-white font-label-md text-xs sm:text-sm py-2.5 sm:py-3 px-5 sm:px-6 rounded-full flex items-center justify-center gap-2 transition-all duration-200 shadow-sm hover:shadow-md hover:-translate-y-0.5 font-bold"
           >
-            <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>
+            <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>
               add
             </span>
             Tambah Sapi Baru
@@ -436,6 +436,7 @@ const AdminDashboardPage = ({
   const navigate = useNavigate();
   const [activeNav, setActiveNav] = useState('daftar');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [settingsDefaultTab, setSettingsDefaultTab] = useState('profil');
   const [cattleList, setCattleList] = useState(initialCattleList || []);
 
@@ -619,15 +620,37 @@ const AdminDashboardPage = ({
 
   return (
     <div className="flex bg-surface text-on-surface h-screen overflow-hidden font-body-md">
+      {/* ── Mobile Sidebar Backdrop ── */}
+      {mobileSidebarOpen && (
+        <div
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-40 md:hidden animate-fade-in"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
+      )}
+
       {/* ── Sidebar ── */}
-      <aside className="w-64 bg-surface-container-low h-screen fixed left-0 top-0 border-r border-outline-variant/20 shadow-sm flex flex-col p-6 z-20">
-        {/* Brand */}
-        <div className="mb-8 flex items-center gap-3">
-          <BullLogo size={40} color="#2D6A4F" />
-          <div>
-            <h1 className="font-headline-md text-headline-md font-bold text-[#2D6A4F] leading-tight">KANDAS</h1>
-            <p className="text-on-surface-variant font-label-sm text-label-sm">Kandang Dastro</p>
+      <aside
+        className={`w-64 bg-surface-container-low h-screen fixed left-0 top-0 border-r border-outline-variant/20 shadow-xl md:shadow-sm flex flex-col p-6 z-50 md:z-20 transition-transform duration-300 ease-in-out ${
+          mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
+      >
+        {/* Brand & Mobile Close Button */}
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <BullLogo size={40} color="#2D6A4F" />
+            <div>
+              <h1 className="font-headline-md text-headline-md font-bold text-[#2D6A4F] leading-tight">KANDAS</h1>
+              <p className="text-on-surface-variant font-label-sm text-label-sm">Kandang Dastro</p>
+            </div>
           </div>
+          <button
+            type="button"
+            onClick={() => setMobileSidebarOpen(false)}
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-surface-container-high transition-colors"
+            aria-label="Tutup sidebar"
+          >
+            <span className="material-symbols-outlined text-[22px]">close</span>
+          </button>
         </div>
 
         {/* Main Nav */}
@@ -643,6 +666,7 @@ const AdminDashboardPage = ({
                   } else {
                     setActiveNav(item.key);
                   }
+                  setMobileSidebarOpen(false);
                 }}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all duration-200 active:scale-95 text-left ${
                   isActive && item.key !== 'tambah'
@@ -662,7 +686,10 @@ const AdminDashboardPage = ({
         {/* Bottom Actions */}
         <div className="mt-auto pt-6 border-t border-outline-variant/20 space-y-1">
           <button
-            onClick={() => setActiveNav('bantuan')}
+            onClick={() => {
+              setActiveNav('bantuan');
+              setMobileSidebarOpen(false);
+            }}
             className={`w-full flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 text-left font-bold ${
               activeNav === 'bantuan'
                 ? 'bg-secondary-container text-on-secondary-container'
@@ -692,14 +719,26 @@ const AdminDashboardPage = ({
       </aside>
 
       {/* ── Main Content ── */}
-      <main className="ml-64 flex-1 flex flex-col h-screen overflow-hidden bg-background">
+      <main className="ml-0 md:ml-64 flex-1 flex flex-col h-screen overflow-hidden bg-background w-full min-w-0">
         {/* Top Header */}
-        <header className="bg-surface/95 border-b border-outline-variant/10 flex justify-between items-center w-full px-8 py-3.5 z-30 sticky top-0 backdrop-blur-md flex-shrink-0">
-          <div>
-            <h2 className="font-headline-md text-headline-md font-bold text-on-surface">{currentPage.title}</h2>
-            <p className="font-body-md text-body-md text-on-surface-variant text-sm hidden lg:block">
-              {currentPage.subtitle}
-            </p>
+        <header className="bg-surface/95 border-b border-outline-variant/10 flex justify-between items-center w-full px-4 sm:px-6 md:px-8 py-3 sm:py-3.5 z-30 sticky top-0 backdrop-blur-md flex-shrink-0">
+          <div className="flex items-center gap-3 min-w-0">
+            {/* Mobile Sidebar Hamburger Toggle */}
+            <button
+              type="button"
+              onClick={() => setMobileSidebarOpen(true)}
+              className="md:hidden p-2 rounded-xl text-on-surface-variant hover:bg-surface-container-high transition-colors flex-shrink-0"
+              aria-label="Buka Menu"
+            >
+              <span className="material-symbols-outlined text-[24px]">menu</span>
+            </button>
+
+            <div className="min-w-0">
+              <h2 className="font-headline-md text-base sm:text-lg md:text-headline-md font-bold text-on-surface truncate">{currentPage.title}</h2>
+              <p className="font-body-md text-body-md text-on-surface-variant text-xs sm:text-sm hidden lg:block">
+                {currentPage.subtitle}
+              </p>
+            </div>
           </div>
 
           <div className="flex items-center gap-4">

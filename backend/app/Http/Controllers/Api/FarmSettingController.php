@@ -30,6 +30,9 @@ class FarmSettingController extends Controller
             'address' => 'nullable|string',
             'google_maps_url' => 'nullable|string',
             'truck_access_note' => 'nullable|string',
+            'hero_image_1' => 'nullable|string|max:1000',
+            'hero_image_2' => 'nullable|string|max:1000',
+            'hero_image_3' => 'nullable|string|max:1000',
             'landing' => 'nullable|array',
         ]);
 
@@ -37,10 +40,28 @@ class FarmSettingController extends Controller
         $settingsData = $validatedData;
         unset($settingsData['landing']);
 
+        // Jika hero_image dikirim di dalam objek landing, sinkronkan ke root field
+        if ($request->has('landing.hero_image_1') && !isset($settingsData['hero_image_1'])) {
+            $settingsData['hero_image_1'] = $request->input('landing.hero_image_1');
+        }
+        if ($request->has('landing.hero_image_2') && !isset($settingsData['hero_image_2'])) {
+            $settingsData['hero_image_2'] = $request->input('landing.hero_image_2');
+        }
+        if ($request->has('landing.hero_image_3') && !isset($settingsData['hero_image_3'])) {
+            $settingsData['hero_image_3'] = $request->input('landing.hero_image_3');
+        }
+
         $settings = FarmSetting::updateOrCreate(['id' => 1], $settingsData);
 
         if ($request->has('landing')) {
-            $settings->landing = $request->input('landing');
+            $landingData = $request->input('landing');
+            if (is_array($landingData)) {
+                // Pastikan hero images tersinkron juga di dalam JSON landing
+                if (isset($settingsData['hero_image_1'])) $landingData['hero_image_1'] = $settingsData['hero_image_1'];
+                if (isset($settingsData['hero_image_2'])) $landingData['hero_image_2'] = $settingsData['hero_image_2'];
+                if (isset($settingsData['hero_image_3'])) $landingData['hero_image_3'] = $settingsData['hero_image_3'];
+            }
+            $settings->landing = $landingData;
             $settings->save();
         }
 

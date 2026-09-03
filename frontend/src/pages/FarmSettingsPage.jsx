@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { farmSettingAPI, bankAccountAPI, uploadAPI, authAPI } from '../services/api';
-import ImageCropper from '../components/ImageCropper';
-import { DEFAULT_LANDING_CONFIG, getLandingSettings, saveLandingSettings, FEATURE_ICONS } from '../utils/landingSettings';
+import { DEFAULT_LANDING_CONFIG, getLandingSettings, saveLandingSettings, FEATURE_ICONS, DEFAULT_HERO_IMAGES } from '../utils/landingSettings';
+import { resolveMediaUrl } from '../utils/imageUrl';
 
 const TABS = [
   { key: 'profil', label: 'Profil & Operasional Kandang' },
@@ -743,9 +743,45 @@ const AkunTab = ({ settings, onChange, registerSave }) => {
 
 // ─── Tab 4: Konten Landing Page ─────────────────────────────────────────────
 const LandingTab = ({ settings, onChange }) => {
-  const landing = getLandingSettings(settings.landing);
+  const landing = getLandingSettings({
+    ...settings.landing,
+    hero_image_1: settings.landing?.hero_image_1 ?? settings.hero_image_1 ?? '',
+    hero_image_2: settings.landing?.hero_image_2 ?? settings.hero_image_2 ?? '',
+    hero_image_3: settings.landing?.hero_image_3 ?? settings.hero_image_3 ?? '',
+  });
 
-  const set = (patch) => onChange('landing', { ...landing, ...patch });
+  const [uploadingIndex, setUploadingIndex] = useState(null);
+  const fileInputRef1 = useRef(null);
+  const fileInputRef2 = useRef(null);
+  const fileInputRef3 = useRef(null);
+  const fileInputRefs = [fileInputRef1, fileInputRef2, fileInputRef3];
+
+  const set = (patch) => {
+    const updated = { ...landing, ...patch };
+    onChange('landing', updated);
+    if ('hero_image_1' in patch) onChange('hero_image_1', patch.hero_image_1);
+    if ('hero_image_2' in patch) onChange('hero_image_2', patch.hero_image_2);
+    if ('hero_image_3' in patch) onChange('hero_image_3', patch.hero_image_3);
+  };
+
+  const handleFileUpload = async (index, e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    try {
+      setUploadingIndex(index);
+      const res = await uploadAPI.uploadFiles([file]);
+      if (res?.data?.urls?.[0]) {
+        const urlKey = `hero_image_${index + 1}`;
+        set({ [urlKey]: res.data.urls[0] });
+      }
+    } catch (err) {
+      console.error('Gagal upload gambar slide:', err);
+      alert('Gagal mengunggah gambar: ' + (err?.response?.data?.message || err.message));
+    } finally {
+      setUploadingIndex(null);
+      if (e.target) e.target.value = '';
+    }
+  };
 
   const updateFeature = (index, field, value) => {
     const features = landing.features.map((f, i) => (i === index ? { ...f, [field]: value } : f));
@@ -769,7 +805,7 @@ const LandingTab = ({ settings, onChange }) => {
       <div className="bg-[#2D6A4F]/10 text-[#2D6A4F] border border-[#2D6A4F]/20 rounded-xl px-4 py-3 text-sm flex items-start gap-2">
         <span className="material-symbols-outlined text-[18px]">info</span>
         <span>
-          Kelola teks tampilan landing page (hero, tentang, fitur, judul lokasi). Alamat, WhatsApp, jam kunjungan, dan peta tetap diatur lewat tab <strong>Profil &amp; Operasional Kandang</strong>.
+          Kelola teks tampilan landing page (hero, gambar slide carousel, tentang, fitur, judul lokasi). Alamat, WhatsApp, jam kunjungan, dan peta tetap diatur lewat tab <strong>Profil &amp; Operasional Kandang</strong>.
         </span>
       </div>
       {/* Hero Section */}
@@ -778,7 +814,7 @@ const LandingTab = ({ settings, onChange }) => {
           <span className="material-symbols-outlined text-primary">campaign</span>
           Hero Section
         </h3>
-        <div className="space-y-5">
+        <div className="space-y-6">
           <div>
             <label className={labelCls}>Badge / Label Atas</label>
             <input className={inputCls} type="text" value={landing.heroBadge} onChange={(e) => set({ heroBadge: e.target.value })} />
@@ -790,6 +826,99 @@ const LandingTab = ({ settings, onChange }) => {
           <div>
             <label className={labelCls}>Subjudul / Deskripsi Hero</label>
             <textarea className={inputCls} rows={3} value={landing.heroSubtitle} onChange={(e) => set({ heroSubtitle: e.target.value })} />
+          </div>
+
+          {/* 3 Gambar Slide Carousel */}
+          <div className="pt-4 border-t border-outline-variant/20">
+            <h4 className="font-label-md text-label-md text-on-surface font-bold mb-1 flex items-center gap-2">
+              <span className="material-symbols-outlined text-primary text-[20px]">view_carousel</span>
+              Gambar Slide Carousel (3 Slide)
+            </h4>
+            <p className="font-body-md text-xs text-on-surface-variant mb-4">
+              Atur gambar untuk masing-masing slide carousel pada tampilan utama. Masukkan URL gambar atau unggah langsung dari perangkat.
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {[1, 2, 3].map((num, idx) => {
+                const key = `hero_image_${num}`;
+                const val = landing[key] || '';
+                const fallbackUrl = DEFAULT_HERO_IMAGES[idx] || '';
+                const displayUrl = val ? resolveMediaUrl(val) : fallbackUrl;
+
+                return (
+                  <div key={num} className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-4 flex flex-col justify-between space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-label-sm text-label-sm font-bold text-on-surface">Slide {num}</span>
+                        {val ? (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                            Kustom
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-200">
+                            Default
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Preview Box */}
+                      <div className="relative w-full h-36 rounded-lg overflow-hidden border border-outline-variant/20 bg-slate-100 mb-3 group">
+                        <img
+                          src={displayUrl}
+                          alt={`Slide ${num}`}
+                          className="w-full h-full object-cover transition-transform group-hover:scale-105 duration-300"
+                          onError={(e) => {
+                            e.target.src = fallbackUrl;
+                          }}
+                        />
+                        {val && (
+                          <button
+                            type="button"
+                            onClick={() => set({ [key]: '' })}
+                            title="Hapus URL kustom (kembali ke default)"
+                            className="absolute top-2 right-2 bg-black/60 hover:bg-rose-600 text-white p-1 rounded-full text-xs transition-colors backdrop-blur-sm shadow-sm"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">close</span>
+                          </button>
+                        )}
+                      </div>
+
+                      {/* URL Input */}
+                      <label className={labelCls}>URL Gambar Slide {num}</label>
+                      <input
+                        className={inputCls}
+                        type="text"
+                        placeholder="https://... atau /storage/..."
+                        value={val}
+                        onChange={(e) => set({ [key]: e.target.value })}
+                      />
+                    </div>
+
+                    {/* Upload Button */}
+                    <div>
+                      <input
+                        type="file"
+                        ref={fileInputRefs[idx]}
+                        onChange={(e) => handleFileUpload(idx, e)}
+                        accept="image/*"
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        disabled={uploadingIndex === idx}
+                        onClick={() => fileInputRefs[idx].current?.click()}
+                        className="w-full py-2 px-3 rounded-lg border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary font-label-sm text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98"
+                      >
+                        <span className="material-symbols-outlined text-[16px]">
+                          {uploadingIndex === idx ? 'hourglass_top' : 'upload'}
+                        </span>
+                        {uploadingIndex === idx ? 'Mengunggah...' : `Upload Foto Slide ${num}`}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
       </section>
@@ -980,8 +1109,16 @@ const FarmSettingsPage = ({ settings, onSave, defaultTab = 'profil' }) => {
       } else if (activeTab === 'landing') {
         const landingPayload = getLandingSettings(localSettings.landing);
         saveLandingSettings(landingPayload);
-        await farmSettingAPI.update({ landing: landingPayload });
-        setLocalSettings((prev) => ({ ...prev, landing: landingPayload }));
+        const payload = {
+          hero_image_1: landingPayload.hero_image_1 || localSettings.hero_image_1 || '',
+          hero_image_2: landingPayload.hero_image_2 || localSettings.hero_image_2 || '',
+          hero_image_3: landingPayload.hero_image_3 || localSettings.hero_image_3 || '',
+          landing: landingPayload,
+        };
+        const response = await farmSettingAPI.update(payload);
+        if (response?.data) {
+          setLocalSettings((prev) => ({ ...prev, ...response.data, landing: landingPayload }));
+        }
         onSave(localSettings);
         setSaved(true);
         setTimeout(() => setSaved(false), 2500);
@@ -1010,14 +1147,14 @@ const FarmSettingsPage = ({ settings, onSave, defaultTab = 'profil' }) => {
     <div className="flex flex-col h-full relative">
       {/* Scrollable content */}
       <div className="flex-1 overflow-y-auto pb-28">
-        <div className="p-6 md:p-8 max-w-container-max mx-auto w-full">
-          {/* Tabs */}
-          <div className="flex gap-1 border-b border-outline-variant/20 mb-8 overflow-x-auto">
+        <div className="p-4 sm:p-6 md:p-8 max-w-container-max mx-auto w-full">
+          {/* Tabs (Responsive horizontal scroll) */}
+          <div className="flex gap-1 border-b border-outline-variant/20 mb-6 sm:mb-8 overflow-x-auto no-scrollbar">
             {TABS.map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`px-5 py-3 font-label-md text-label-md whitespace-nowrap transition-colors ${
+                className={`px-3.5 sm:px-5 py-2.5 sm:py-3 font-label-md text-xs sm:text-sm whitespace-nowrap transition-colors flex-shrink-0 ${
                   activeTab === tab.key
                     ? 'text-primary border-b-2 border-primary font-bold'
                     : 'text-on-surface-variant hover:text-primary font-medium'
@@ -1045,9 +1182,9 @@ const FarmSettingsPage = ({ settings, onSave, defaultTab = 'profil' }) => {
       </div>
 
       {/* Sticky Footer Action Bar */}
-      <div className="absolute bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-outline-variant/20 px-6 md:px-8 py-4 flex justify-end gap-4 z-30 shadow-[0_-4px_20px_rgba(15,23,42,0.04)]">
+      <div className="absolute bottom-0 left-0 right-0 bg-surface/95 backdrop-blur-md border-t border-outline-variant/20 px-4 sm:px-6 md:px-8 py-3 sm:py-4 flex flex-col-reverse sm:flex-row justify-end gap-2 sm:gap-4 z-30 shadow-[0_-4px_20px_rgba(15,23,42,0.04)]">
         <button
-          className="px-6 py-2.5 rounded-full border border-outline-variant font-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors text-sm font-semibold"
+          className="w-full sm:w-auto px-5 sm:px-6 py-2.5 rounded-full border border-outline-variant font-label-md text-on-surface-variant hover:bg-surface-container-high transition-colors text-xs sm:text-sm font-semibold"
           onClick={() => setLocalSettings(settings)}
         >
           Batal
@@ -1055,7 +1192,7 @@ const FarmSettingsPage = ({ settings, onSave, defaultTab = 'profil' }) => {
        <button
           onClick={handleSave}
           disabled={isSaving || saved}
-          className={`px-6 py-2.5 rounded-full bg-[#2D6A4F] text-white font-label-md hover:bg-[#23533e] transition-colors shadow-sm hover:shadow-md hover:-translate-y-0.5 duration-200 flex items-center gap-2 text-sm font-bold ${
+          className={`w-full sm:w-auto px-5 sm:px-6 py-2.5 rounded-full bg-[#2D6A4F] text-white font-label-md hover:bg-[#23533e] transition-colors shadow-sm hover:shadow-md hover:-translate-y-0.5 duration-200 flex items-center justify-center gap-2 text-xs sm:text-sm font-bold ${
             saved ? 'opacity-80' : ''
           }`}
         >

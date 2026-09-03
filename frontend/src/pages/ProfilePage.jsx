@@ -80,21 +80,21 @@ const ProfilePage = ({ onProfileUpdated }) => {
   const fieldCls = 'block font-label-sm text-label-sm text-on-surface-variant mb-1.5 font-semibold';
 
   return (
-    <div className="p-6 md:p-8 max-w-[1000px] mx-auto space-y-6 pb-20 animate-fade-in">
+    <div className="p-4 sm:p-6 md:p-8 max-w-[1000px] mx-auto space-y-4 sm:space-y-6 pb-20 animate-fade-in">
       {/* Header */}
       <div>
-        <h2 className="font-headline-lg text-headline-lg text-on-surface font-bold">Profil &amp; Keamanan Akun</h2>
-        <p className="font-body-md text-body-md text-on-surface-variant mt-1">Kelola informasi data diri dan kata sandi login Anda.</p>
+        <h2 className="font-headline-lg text-xl sm:text-2xl md:text-headline-lg text-on-surface font-bold">Profil &amp; Keamanan Akun</h2>
+        <p className="font-body-md text-xs sm:text-sm text-on-surface-variant mt-1">Kelola informasi data diri dan kata sandi login Anda.</p>
       </div>
 
-      <form onSubmit={handleSave} className="bg-white border border-slate-200 rounded-2xl p-6 sm:p-8 space-y-8 shadow-sm">
+      <form onSubmit={handleSave} className="bg-white border border-slate-200 rounded-2xl p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8 shadow-sm">
         {/* ── Bagian 1: Data Diri Petugas ── */}
         <section>
-          <h3 className="font-headline-md text-headline-md text-on-surface font-bold mb-5 flex items-center gap-2">
+          <h3 className="font-headline-md text-base sm:text-lg md:text-headline-md text-on-surface font-bold mb-4 sm:mb-5 flex items-center gap-2">
             <span className="material-symbols-outlined text-[#1E3A2B]">person</span>
             Data Diri Petugas
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
             <div>
               <label className={fieldCls}>Nama Lengkap</label>
               <input className={inputCls} type="text" value={profile.name} onChange={(e) => setProfile({ ...profile, name: e.target.value })} placeholder="Nama lengkap" />
@@ -118,11 +118,11 @@ const ProfilePage = ({ onProfileUpdated }) => {
 
         {/* ── Bagian 2: Ganti Kata Sandi ── */}
         <section>
-          <h3 className="font-headline-md text-headline-md text-on-surface font-bold mb-5 flex items-center gap-2">
+          <h3 className="font-headline-md text-base sm:text-lg md:text-headline-md text-on-surface font-bold mb-4 sm:mb-5 flex items-center gap-2">
             <span className="material-symbols-outlined text-[#1E3A2B]">lock</span>
             Ganti Kata Sandi
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5">
             <div>
               <label className={fieldCls}>Password Saat Ini</label>
               <div className="relative">
@@ -158,7 +158,7 @@ const ProfilePage = ({ onProfileUpdated }) => {
           <button
             type="submit"
             disabled={isSaving || saved}
-            className="inline-flex items-center gap-2 px-8 py-3 rounded-xl bg-[#1E3A2B] text-white font-bold text-sm hover:bg-[#15301f] transition-all shadow-sm active:scale-[0.99] disabled:opacity-70"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3 rounded-xl bg-[#1E3A2B] text-white font-bold text-xs sm:text-sm hover:bg-[#15301f] transition-all shadow-sm active:scale-[0.99] disabled:opacity-70"
           >
             {saved ? (
               <>

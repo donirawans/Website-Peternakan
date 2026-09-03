@@ -17,6 +17,9 @@ class FarmSetting extends Model
         'address',
         'google_maps_url',
         'truck_access_note',
+        'hero_image_1',
+        'hero_image_2',
+        'hero_image_3',
         'landing',
     ];
 

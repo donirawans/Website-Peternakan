@@ -37,12 +37,21 @@ export const DEFAULT_FEATURES = [
   },
 ];
 
+export const DEFAULT_HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1546445317-29f4545e9d53?w=800&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1570042225831-d98fa7577f1e?w=800&auto=format&fit=crop&q=80',
+  'https://images.unsplash.com/photo-1500595046743-cd271d694d30?w=800&auto=format&fit=crop&q=80',
+];
+
 export const DEFAULT_LANDING_CONFIG = {
   // Hero Section
   heroBadge: 'Rawatan Asli Peternak Lokal',
   heroTitle: 'Dari Pedetan Sampai Sapi Qurban, Semua Ada di Sini',
   heroSubtitle:
     'Sedia bibit pedet lepas sapih, bakalan penggemukan, hingga sapi dewasa siap Qurban. Dirawat telaten dengan pakan hijauan segar harian—bebas survei dan cek kondisi fisik langsung di kandang.',
+  hero_image_1: '',
+  hero_image_2: '',
+  hero_image_3: '',
 
   // Section Tentang / Keunggulan
   aboutTitle: 'Kenapa Harus Pilih Sapi di Sini?',
