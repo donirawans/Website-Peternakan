@@ -913,7 +913,7 @@ const LandingTab = ({ settings, onChange }) => {
                       </div>
 
                       {/* Preview Box */}
-                      <div className="relative w-full h-36 rounded-lg overflow-hidden border border-outline-variant/20 bg-slate-100 mb-3 group">
+                      <div className="relative w-full h-44 rounded-xl overflow-hidden border border-outline-variant/20 bg-slate-100 mb-1 group">
                         <img
                           src={displayUrl}
                           alt={`Slide ${num}`}
@@ -943,35 +943,15 @@ const LandingTab = ({ settings, onChange }) => {
                               set({ [key]: '' });
                             }}
                             title="Hapus gambar kustom (kembali ke default)"
-                            className="absolute top-2 right-2 bg-black/60 hover:bg-rose-600 text-white p-1 rounded-full text-xs transition-colors backdrop-blur-sm shadow-sm z-10"
+                            className="absolute top-2 right-2 bg-black/60 hover:bg-rose-600 text-white p-1.5 rounded-full text-xs transition-colors backdrop-blur-sm shadow-sm z-10"
                           >
                             <span className="material-symbols-outlined text-[16px]">close</span>
                           </button>
                         )}
                       </div>
-
-                      {/* URL Input */}
-                      <label className={labelCls}>URL Gambar Slide {num}</label>
-                      <input
-                        className={inputCls}
-                        type="text"
-                        placeholder="https://... atau /storage/..."
-                        value={val}
-                        onChange={(e) => {
-                          const cleanVal = ensureHttps(e.target.value);
-                          set({ [key]: cleanVal });
-                          if (localPreviews[idx]) {
-                            setLocalPreviews((prev) => {
-                              const next = { ...prev };
-                              delete next[idx];
-                              return next;
-                            });
-                          }
-                        }}
-                      />
                     </div>
 
-                    {/* Upload & Crop Button */}
+                    {/* Upload & Crop Button from Gallery */}
                     <div>
                       <input
                         type="file"
@@ -984,12 +964,12 @@ const LandingTab = ({ settings, onChange }) => {
                         type="button"
                         disabled={isUploading}
                         onClick={() => fileInputRefs[idx].current?.click()}
-                        className="w-full py-2 px-3 rounded-lg border border-dashed border-primary/40 bg-primary/5 hover:bg-primary/10 text-primary font-label-sm text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98 disabled:opacity-50"
+                        className="w-full py-2.5 px-3 rounded-xl border border-dashed border-primary/50 bg-primary/5 hover:bg-primary/10 text-primary font-label-sm text-xs font-bold transition-all flex items-center justify-center gap-1.5 active:scale-98 disabled:opacity-50"
                       >
-                        <span className="material-symbols-outlined text-[16px]">
-                          {isUploading ? 'hourglass_top' : 'crop_free'}
+                        <span className="material-symbols-outlined text-[18px]">
+                          {isUploading ? 'hourglass_top' : 'add_photo_alternate'}
                         </span>
-                        {isUploading ? 'Mengunggah...' : `Pilih & Crop Foto Slide ${num}`}
+                        {isUploading ? 'Mengunggah Foto...' : `Pilih & Crop Foto Slide ${num}`}
                       </button>
                     </div>
                   </div>
